@@ -1,4 +1,4 @@
-import { useMemo } from 'react';
+import { useMemo, useState } from 'react';
 import {
   LineChart, Line, XAxis, YAxis, Tooltip,
   ResponsiveContainer, CartesianGrid
@@ -6,7 +6,7 @@ import {
 import { getDateForDay, evaluateDayStatus, toDateStr } from '../utils/dayLogic';
 import { getLiftHistory, getPullupHistory } from '../utils/workoutLogic';
 
-export default function Stats({ data, onBack }) {
+export default function Stats({ data, onBack, onReset }) {
   const { startDate, days, workouts = {} } = data;
   const todayStr = toDateStr(new Date());
 
@@ -157,6 +157,7 @@ export default function Stats({ data, onBack }) {
         {/* Weekly summaries */}
         <div>
           <p className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-3">Weekly Breakdown</p>
+
           <div className="space-y-3">
             {weeks.map(({ w, empty, avgCals, avgProtein, avgWater, stretchRate }) => (
               <div key={w} className="rounded-xl p-4" style={{ background: '#0d1117', border: '1px solid #21262d' }}>
@@ -175,7 +176,49 @@ export default function Stats({ data, onBack }) {
             ))}
           </div>
         </div>
+
+        {/* Reset */}
+        <ResetButton onReset={onReset} />
+
       </div>
+    </div>
+  );
+}
+
+function ResetButton({ onReset }) {
+  const [confirming, setConfirming] = useState(false);
+
+  return (
+    <div className="rounded-xl p-4" style={{ background: '#0d1117', border: '1px solid #21262d' }}>
+      <p className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-3">Danger Zone</p>
+      {!confirming ? (
+        <button
+          onClick={() => setConfirming(true)}
+          className="w-full py-3 rounded-xl text-sm font-bold transition-all active:scale-95"
+          style={{ background: 'rgba(218,54,51,0.1)', border: '1px solid rgba(218,54,51,0.25)', color: '#da3633' }}>
+          Reset App
+        </button>
+      ) : (
+        <div className="space-y-2">
+          <p className="text-xs text-gray-400 text-center">
+            This deletes <span className="text-white font-bold">all 30 days</span> of logs, workouts, and templates. Cannot be undone.
+          </p>
+          <div className="flex gap-2">
+            <button
+              onClick={() => setConfirming(false)}
+              className="flex-1 py-2.5 rounded-xl text-sm font-bold transition-all active:scale-95"
+              style={{ background: '#161b22', border: '1px solid #21262d', color: '#8b949e' }}>
+              Cancel
+            </button>
+            <button
+              onClick={onReset}
+              className="flex-1 py-2.5 rounded-xl text-sm font-black transition-all active:scale-95"
+              style={{ background: '#da3633', color: '#fff' }}>
+              Yes, reset everything
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

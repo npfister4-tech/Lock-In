@@ -58,6 +58,13 @@ export default function App() {
     setData(prev => updateTemplates(prev, templates));
   }, []);
 
+  const handleReset = useCallback(() => {
+    localStorage.clear();
+    setData(null);
+    setActiveTab('dashboard');
+    setScreen('onboarding');
+  }, []);
+
   if (screen === 'loading') {
     return (
       <div className="min-h-screen flex items-center justify-center" style={{ background: '#080c10' }}>
@@ -101,7 +108,7 @@ export default function App() {
           />
         )}
         {activeTab === 'stats' && (
-          <Stats data={data} />
+          <Stats data={data} onReset={handleReset} />
         )}
       </div>
 
